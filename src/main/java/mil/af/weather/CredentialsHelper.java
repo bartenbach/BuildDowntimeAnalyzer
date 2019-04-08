@@ -1,23 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mil.af.weather;
 
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Job;
-import java.util.ArrayList;
+import java.awt.Cursor;
 import java.util.Map;
+import javax.swing.JOptionPane;
 
 /**
  *
- * @author alureon
+ * @author Blake Bartenbach
  */
 public class CredentialsHelper extends javax.swing.JFrame {
 
     /**
-     * Creates new form CredentialsDialog
+     * Creates new form CredentialsHelper.
      */
     public CredentialsHelper() {
         initComponents();
@@ -40,6 +36,8 @@ public class CredentialsHelper extends javax.swing.JFrame {
         textPassword = new javax.swing.JPasswordField();
         btnSubmit = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        textJenkinsUrl = new javax.swing.JTextField();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -55,17 +53,12 @@ public class CredentialsHelper extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Enter Credentials");
         setAlwaysOnTop(true);
-        setMinimumSize(new java.awt.Dimension(304, 195));
+        setMinimumSize(new java.awt.Dimension(419, 210));
         setName("credentialsFrame"); // NOI18N
         setResizable(false);
         getContentPane().setLayout(null);
 
         textUsername.setColumns(15);
-        textUsername.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                textUsernameActionPerformed(evt);
-            }
-        });
 
         jLabel2.setText("Username:");
 
@@ -85,63 +78,90 @@ public class CredentialsHelper extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setText("Jenkins URL:");
+
+        textJenkinsUrl.setText("http://localhost:8080/jenkins");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(btnSubmit))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(49, 49, 49)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(textUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(btnCancel)
-                                .addComponent(textPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(28, Short.MAX_VALUE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(textUsername, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(textPassword, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(textJenkinsUrl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                        .addGap(80, 80, 80)
+                        .addComponent(btnSubmit)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnCancel)
+                        .addGap(22, 22, 22)))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(38, 38, 38)
+                .addGap(17, 17, 17)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel2)
+                    .addComponent(textUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(textPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textJenkinsUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSubmit)
                     .addComponent(btnCancel))
-                .addContainerGap(33, Short.MAX_VALUE))
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel2);
-        jPanel2.setBounds(10, 10, 280, 170);
+        jPanel2.setBounds(10, 10, 400, 170);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void textUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textUsernameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_textUsernameActionPerformed
-
     private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
+        // set the wait cursor
+        this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+        // get users credentials and URL
         String username = textUsername.getText();
         char[] password = textPassword.getPassword();
-        JenkinsServer jenkinsServer = JenkinsHandler.getJenkins(username, password);
+        String jenkinsUrl = textJenkinsUrl.getText();
+        // instantiate jenkins server object using given credentials
+        JenkinsServer jenkinsServer = JenkinsHandler.getJenkins(jenkinsUrl, username, password);
+        // build a map of all jobs on the server
         Map<String,Job> jobMap = JenkinsHandler.getJobs(jenkinsServer);
+        
+        // If we can't get a map of jobs, there's no point going any further
+        if (jobMap == null) {
+            JOptionPane.showMessageDialog(this, "Failed to connect to Jenkins instance", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+        
         BuildDowntimeAnalyzer buildDowntimeAnalyzer = new BuildDowntimeAnalyzer(jobMap);
+        // hide credentials window
         this.setVisible(false);
+        // center build downtime analyzer window and set visible
+        buildDowntimeAnalyzer.setLocationRelativeTo(null);
+        buildDowntimeAnalyzer.setVisible(true);
+        
+        this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_btnSubmitActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
@@ -177,13 +197,11 @@ public class CredentialsHelper extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                CredentialsHelper credentialsHelper = new CredentialsHelper();
-                credentialsHelper.setLocationRelativeTo(null);
-                credentialsHelper.setVisible(true);
-                credentialsHelper.getRootPane().setDefaultButton(btnSubmit);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            CredentialsHelper credentialsHelper = new CredentialsHelper();
+            credentialsHelper.setLocationRelativeTo(null);
+            credentialsHelper.setVisible(true);
+            credentialsHelper.getRootPane().setDefaultButton(btnSubmit);
         });
     }
 
@@ -192,8 +210,10 @@ public class CredentialsHelper extends javax.swing.JFrame {
     private static javax.swing.JButton btnSubmit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JTextField textJenkinsUrl;
     private javax.swing.JPasswordField textPassword;
     private javax.swing.JTextField textUsername;
     // End of variables declaration//GEN-END:variables

@@ -16,7 +16,7 @@ public class JenkinsHandlerTest {
     
     @Test
     public void testGetJenkinsServerNull() {
-        JenkinsServer server = JenkinsHandler.getJenkins(null, null);
+        JenkinsServer server = JenkinsHandler.getJenkins(null, null, null);
         assertNull(server);
     }
 }
