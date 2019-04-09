@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mil.af.weather.ui;
 
 import com.offbytwo.jenkins.model.Build;
@@ -12,13 +7,10 @@ import mil.af.weather.format.TimeFormat;
 import java.awt.Cursor;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import mil.af.weather.BuildMetrics;
 import mil.af.weather.JenkinsHandler;
@@ -304,10 +296,8 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
         BuildMetrics metrics = new BuildMetrics().calculateMetrics(selectedBuilds);
 
         // format the uptime and downtime and set them in the UI
-        String formattedDowntime = TimeFormat.formatMillisecondsToReadableTime(metrics);
-        String formattedUptime = TimeFormat.formatMillisecondsToReadableTime(metrics);
-        textBuildDowntime.setText(formattedDowntime);
-        textBuildUptime.setText(String.valueOf(formattedUptime));
+        textBuildDowntime.setText(TimeFormat.formatMillisecondsToReadableTime(metrics.getDowntime()));
+        textBuildUptime.setText(TimeFormat.formatMillisecondsToReadableTime(metrics.getUptime()));
         textUptimePercentage.setText(metrics.getUptimePercentage());
 
         // done waiting
