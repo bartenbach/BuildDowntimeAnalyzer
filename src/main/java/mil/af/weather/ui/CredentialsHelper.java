@@ -1,10 +1,12 @@
-package mil.af.weather;
+package mil.af.weather.ui;
 
+import mil.af.weather.ui.BuildDowntimeAnalyzer;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Job;
 import java.awt.Cursor;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import mil.af.weather.JenkinsHandler;
 
 /**
  *
@@ -52,7 +54,6 @@ public class CredentialsHelper extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Enter Credentials");
-        setAlwaysOnTop(true);
         setMinimumSize(new java.awt.Dimension(419, 210));
         setName("credentialsFrame"); // NOI18N
         setResizable(false);
@@ -164,11 +165,13 @@ public class CredentialsHelper extends javax.swing.JFrame {
         this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_btnSubmitActionPerformed
 
+    // Simply exits if a user clicks the cancel button.
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         System.exit(0);
     }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
+     * The Entry point of the application.
      * @param args the command line arguments
      */
     public static void main(String[] args) {

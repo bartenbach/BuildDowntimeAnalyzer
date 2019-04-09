@@ -3,25 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mil.af.weather;
+package mil.af.weather.ui;
 
 import com.offbytwo.jenkins.model.Build;
-import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.Job;
+import mil.af.weather.format.TimeFormat;
 import java.awt.Cursor;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import mil.af.weather.BuildMetrics;
+import mil.af.weather.JenkinsHandler;
 
 /**
  *
@@ -233,18 +233,26 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Event fires whenever the JList for Jenkins jobs changes.
+     * @param evt The event from Swing.
+     */
     private void listJenkinsJobsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listJenkinsJobsValueChanged
         // this line is required or the event triggers twice.
         if (evt.getValueIsAdjusting()) {
             return;
         }
+        
+        // set wait cursor
         this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        
         this.currentlySelectedJob = jobMap.get(listJenkinsJobs.getSelectedValue());
         List<String> buildsToDisplay = new ArrayList<>();
         try {
             this.buildListContents = this.currentlySelectedJob.details().getAllBuilds();
+            
+            // for each build, populate the build list in the UI with a human-readable string with build details.
             for (int i = 0; i < this.buildListContents.size(); i++) {
-                // TODO add the status here too
                 BuildWithDetails currentBuild = this.buildListContents.get(i).details();
                 String dateStamp = DateFormat.getDateInstance(DateFormat.LONG).format(new Date(currentBuild.getTimestamp()));
                 String timeStamp = DateFormat.getTimeInstance(DateFormat.LONG).format(new Date(currentBuild.getTimestamp()));
@@ -253,86 +261,55 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
                 buildsToDisplay.add("(" + id + ") " + dateStamp + " " + timeStamp + " [" + status + "]");
             }
         } catch (IOException ex) {
-            Logger.getLogger(BuildDowntimeAnalyzer.class.getName()).log(Level.SEVERE, "Failed to get all builds for job: {0}", this.currentlySelectedJob.getName());
-            JOptionPane.showMessageDialog(null, "An error was encountered getting all the builds for job: " + this.currentlySelectedJob, "Error", JOptionPane.ERROR_MESSAGE);
-            this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            return;
+            // we can fall through this exception and either show a partial list in the UI or an empty list as the list was already initialized.
+            JOptionPane.showMessageDialog(null, "An error was encountered getting builds for job: " + this.currentlySelectedJob, "Error", JOptionPane.ERROR_MESSAGE);
         }
-        System.out.println("Adding " + buildsToDisplay.size() + " to build list");
         listJenkinsBuilds.setListData(buildsToDisplay.toArray(new String[0]));
         this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_listJenkinsJobsValueChanged
 
+    /**
+     * Event fires whenever the JList of builds has changed.
+     * @param evt - The event from Swing.
+     */
     private void listJenkinsBuildsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listJenkinsBuildsValueChanged
         // prevent event from firing twice
         if (evt.getValueIsAdjusting()) {
             return;
         }
-        if (listJenkinsBuilds.getSelectedValuesList().size() <= 1) {
-            // not enough builds are selected
+
+        // if there's only one build for the job, let the user know there's nothing we can do.
+        if (buildListContents.size() < 2) {
+            JOptionPane.showMessageDialog(null, "Not enough builds for the current job to calcualte metrics.",
+                    "Info", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // check that the user selected more that one build
+        if (listJenkinsBuilds.getSelectedValuesList().size() < 2) {
             textBuildDowntime.setText("");
             textBuildUptime.setText("");
             textUptimePercentage.setText("");
             return;
         }
-        if (buildListContents.size() <= 1) {
-            // show dialog that there's nothing to compare
-            JOptionPane.showMessageDialog(null, "Not enough builds to compare.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+
+        // set the wait cursor and begin calculating metrics
         this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         // get all builds the user selected
         int[] indices = listJenkinsBuilds.getSelectedIndices();
-        List<BuildWithDetails> selectedBuilds = new ArrayList<>();
-        
-        for (int i : indices) {
-            try {
-                selectedBuilds.add(this.buildListContents.get(i).details());
-            } catch (IOException ex) {
-                Logger.getLogger(BuildDowntimeAnalyzer.class.getName()).log(Level.SEVERE, "Failed to get build details.");
-            }
-        }
+        List<BuildWithDetails> selectedBuilds = JenkinsHandler.getBuildsWithDetails(indices, this.buildListContents);
 
-        BuildWithDetails build, nextBuild;
-        BuildMetrics metrics = new BuildMetrics();
-        BuildResult status;
+        // iterate through all builds and collect details
+        BuildMetrics metrics = new BuildMetrics().calculateMetrics(selectedBuilds);
 
-        for (int i = 0; i < selectedBuilds.size() - 1; i++) {
-            build = selectedBuilds.get(i);
-            nextBuild = selectedBuilds.get(i+1);
-            if (build.isBuilding() || nextBuild.isBuilding()) {
-                JOptionPane.showMessageDialog(null, "One of the selected builds is still building which may skew statistics.",
-                        "Warning", JOptionPane.WARNING_MESSAGE);
-            }
-            status = nextBuild.getResult();
-            switch (status) {
-                case FAILURE:
-                    metrics.addDowntime(build.getTimestamp() - nextBuild.getTimestamp());
-                    break;
-                case SUCCESS:
-                    metrics.addUptime(build.getTimestamp() - nextBuild.getTimestamp());
-                    break;
-            }
-        }
-        String formattedDowntime = String.format("%02d hours %02d minutes %02d seconds", TimeUnit.MILLISECONDS.toHours(metrics.getDowntime()),
-                TimeUnit.MILLISECONDS.toMinutes(metrics.getDowntime()) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(metrics.getDowntime()) % TimeUnit.MINUTES.toSeconds(1));
-        String formattedUptime = String.format("%02d hours %02d minutes %02d seconds", TimeUnit.MILLISECONDS.toHours(metrics.getUptime()),
-                TimeUnit.MILLISECONDS.toMinutes(metrics.getUptime()) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(metrics.getUptime()) % TimeUnit.MINUTES.toSeconds(1));
-        
+        // format the uptime and downtime and set them in the UI
+        String formattedDowntime = TimeFormat.formatMillisecondsToReadableTime(metrics);
+        String formattedUptime = TimeFormat.formatMillisecondsToReadableTime(metrics);
         textBuildDowntime.setText(formattedDowntime);
         textBuildUptime.setText(String.valueOf(formattedUptime));
-        
-        // uptime percentage calculation
-        double downtimePercentage = (double) metrics.getDowntime() / metrics.getTotalTime();
-        double uptimePercentage = 1 - downtimePercentage;
-        NumberFormat nf = NumberFormat.getPercentInstance();
-        nf.setMaximumFractionDigits(2);
-        nf.setMinimumFractionDigits(1);
-        textUptimePercentage.setText(nf.format(uptimePercentage));
-        
+        textUptimePercentage.setText(metrics.getUptimePercentage());
+
         // done waiting
         this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_listJenkinsBuildsValueChanged

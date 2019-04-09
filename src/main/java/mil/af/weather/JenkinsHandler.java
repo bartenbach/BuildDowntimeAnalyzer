@@ -2,15 +2,17 @@ package mil.af.weather;
 
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.Job;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mil.af.weather.ui.BuildDowntimeAnalyzer;
 
 /**
  * Provides various functions for handling interaction with the jenkins-client
@@ -66,7 +68,25 @@ public class JenkinsHandler {
         }
     }
 
-    public static List<Build> getJenkinsBuilds(List<String> selectedValues) {
-        return null;
+    /**
+     * Accepts indexes from the build list and returns a list of BuildWithDetails objects comprised of the 
+     * selected builds.
+     * @param selectedIndices - The indexes to get details from within the build list.
+     * @param buildListContents - The contents of the build list.
+     * @return A list containing BuildWithDetails (build details objects) corresponding to the provided
+     * build list and indexes.
+     */
+    public static List<BuildWithDetails> getBuildsWithDetails(int[] selectedIndices, List<Build> buildListContents) {
+        List<BuildWithDetails> selectedBuilds = new ArrayList<>();
+        for (int i : selectedIndices) {
+            try {
+                selectedBuilds.add(buildListContents.get(i).details());
+            } catch (IOException ex) {
+                Logger.getLogger(BuildDowntimeAnalyzer.class.getName()).log(Level.SEVERE,
+                        "Failed to get build details for build with number: {0}", buildListContents.get(i).getNumber());
+            }
+        }
+        return selectedBuilds;
     }
+
 }
