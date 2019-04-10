@@ -19,7 +19,9 @@ public final class TimeFormat {
      * @return String - the formatted time string as XX hours XX minutes XX seconds
      */
     public static String formatMillisecondsToReadableTime(long time) {
-        return String.format("%02d hours %02d minutes %02d seconds", TimeUnit.MILLISECONDS.toHours(time),
+        return String.format("%02d days, %02d hours, %02d minutes, %02d seconds", 
+                TimeUnit.MILLISECONDS.toDays(time),
+                TimeUnit.MILLISECONDS.toHours(time) % TimeUnit.DAYS.toHours(1),
                 TimeUnit.MILLISECONDS.toMinutes(time) % TimeUnit.HOURS.toMinutes(1),
                 TimeUnit.MILLISECONDS.toSeconds(time) % TimeUnit.MINUTES.toSeconds(1));
     }

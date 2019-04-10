@@ -1,6 +1,7 @@
 package mil.af.weather.ui;
 
 import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.Job;
 import mil.af.weather.format.TimeFormat;
@@ -34,9 +35,17 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
      * Holds all builds that are currently in the buildList.
      */
     private List<Build> buildListContents = new ArrayList<>();
+    /**
+     * Total failed builds in the buildList.
+     */
+    private int failedBuilds = 0;
+    /**
+     * Total successful builds in the buildList.
+     */
+    private int successfulBuilds = 0;
 
     /**
-     * Creates new form BuildDowntimeAnalyzer
+     * Creates new form BuildDowntimeAnalyzer. Does not check for null jobMap.
      *
      * @param jobMap - The map of all jobs on the Jenkins server
      */
@@ -84,6 +93,12 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
         btnClear = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         textUptimePercentage = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        textTotalFailedBuilds = new javax.swing.JTextField();
+        textTotalSuccessfulBuilds = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        textTotalBuilds = new javax.swing.JTextField();
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -142,6 +157,12 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
 
         jLabel5.setText("Uptime Percentage:");
 
+        jLabel6.setText("Total Successful Builds:");
+
+        jLabel7.setText("Total Failed Builds:");
+
+        jLabel8.setText("Total Selected Builds:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -153,30 +174,43 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addGap(177, 177, 177))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(141, 141, 141)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel5))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(textBuildDowntime, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
-                            .addComponent(textBuildUptime)
-                            .addComponent(textUptimePercentage, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnSelectAll)
-                .addGap(34, 34, 34)
-                .addComponent(btnClear)
-                .addGap(95, 95, 95))
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnSelectAll)
+                        .addGap(34, 34, 34)
+                        .addComponent(btnClear)
+                        .addGap(95, 95, 95))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel8))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(textTotalFailedBuilds, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(textTotalBuilds, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                                    .addComponent(textTotalSuccessfulBuilds))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(textBuildDowntime)
+                            .addComponent(textBuildUptime, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textUptimePercentage, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(23, 23, 23))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,16 +230,22 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(textBuildDowntime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(textBuildDowntime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                    .addComponent(textTotalFailedBuilds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(textBuildUptime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(textBuildUptime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(textTotalSuccessfulBuilds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(textUptimePercentage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(46, Short.MAX_VALUE))
+                    .addComponent(textUptimePercentage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8)
+                    .addComponent(textTotalBuilds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -227,6 +267,7 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
 
     /**
      * Event fires whenever the JList for Jenkins jobs changes.
+     *
      * @param evt The event from Swing.
      */
     private void listJenkinsJobsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listJenkinsJobsValueChanged
@@ -234,15 +275,16 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
         if (evt.getValueIsAdjusting()) {
             return;
         }
-        
+
         // set wait cursor
         this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        
+
         this.currentlySelectedJob = jobMap.get(listJenkinsJobs.getSelectedValue());
         List<String> buildsToDisplay = new ArrayList<>();
+ 
         try {
             this.buildListContents = this.currentlySelectedJob.details().getAllBuilds();
-            
+
             // for each build, populate the build list in the UI with a human-readable string with build details.
             for (int i = 0; i < this.buildListContents.size(); i++) {
                 BuildWithDetails currentBuild = this.buildListContents.get(i).details();
@@ -251,17 +293,26 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
                 String id = currentBuild.getId();
                 String status = currentBuild.getResult().toString();
                 buildsToDisplay.add("(" + id + ") " + dateStamp + " " + timeStamp + " [" + status + "]");
+                if (currentBuild.getResult() == BuildResult.SUCCESS) {
+                    this.successfulBuilds += 1;
+                } else if (currentBuild.getResult() == BuildResult.FAILURE) {
+                    this.failedBuilds += 1;
+                }
             }
         } catch (IOException ex) {
             // we can fall through this exception and either show a partial list in the UI or an empty list as the list was already initialized.
             JOptionPane.showMessageDialog(null, "An error was encountered getting builds for job: " + this.currentlySelectedJob, "Error", JOptionPane.ERROR_MESSAGE);
         }
         listJenkinsBuilds.setListData(buildsToDisplay.toArray(new String[0]));
+        textTotalBuilds.setText(String.valueOf(this.buildListContents.size()));
+        textTotalFailedBuilds.setText(String.valueOf(failedBuilds));
+        textTotalSuccessfulBuilds.setText(String.valueOf(successfulBuilds));
         this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_listJenkinsJobsValueChanged
 
     /**
      * Event fires whenever the JList of builds has changed.
+     *
      * @param evt - The event from Swing.
      */
     private void listJenkinsBuildsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listJenkinsBuildsValueChanged
@@ -290,15 +341,23 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
 
         // get all builds the user selected
         int[] indices = listJenkinsBuilds.getSelectedIndices();
+        boolean containsFinalBuild = false;
+        if (indices.length == this.buildListContents.size()) {
+            // if all elements are selected
+            containsFinalBuild = true;
+        }
         List<BuildWithDetails> selectedBuilds = JenkinsHandler.getBuildsWithDetails(indices, this.buildListContents);
 
         // iterate through all builds and collect details
-        BuildMetrics metrics = new BuildMetrics().calculateMetrics(selectedBuilds);
+        BuildMetrics metrics = new BuildMetrics().buildMetrics(selectedBuilds, containsFinalBuild);
 
         // format the uptime and downtime and set them in the UI
         textBuildDowntime.setText(TimeFormat.formatMillisecondsToReadableTime(metrics.getDowntime()));
         textBuildUptime.setText(TimeFormat.formatMillisecondsToReadableTime(metrics.getUptime()));
         textUptimePercentage.setText(metrics.getUptimePercentage());
+        textTotalBuilds.setText(String.valueOf(selectedBuilds.size()));
+        textTotalFailedBuilds.setText(String.valueOf(metrics.getFailedBuilds()));
+        textTotalSuccessfulBuilds.setText(String.valueOf(metrics.getSuccessfulBuilds()));
 
         // done waiting
         this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -310,6 +369,9 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         listJenkinsBuilds.clearSelection();
+        textTotalBuilds.setText(String.valueOf(this.buildListContents.size()));
+        textTotalFailedBuilds.setText(String.valueOf(this.failedBuilds));
+        textTotalSuccessfulBuilds.setText(String.valueOf(this.successfulBuilds));
     }//GEN-LAST:event_btnClearActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -320,6 +382,9 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -329,6 +394,9 @@ public class BuildDowntimeAnalyzer extends javax.swing.JFrame {
     private javax.swing.JList<String> listJenkinsJobs;
     private javax.swing.JTextField textBuildDowntime;
     private javax.swing.JTextField textBuildUptime;
+    private javax.swing.JTextField textTotalBuilds;
+    private javax.swing.JTextField textTotalFailedBuilds;
+    private javax.swing.JTextField textTotalSuccessfulBuilds;
     private javax.swing.JTextField textUptimePercentage;
     // End of variables declaration//GEN-END:variables
 }

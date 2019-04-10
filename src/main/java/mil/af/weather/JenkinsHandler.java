@@ -18,7 +18,13 @@ import mil.af.weather.ui.BuildDowntimeAnalyzer;
  * Provides various functions for handling interaction with the jenkins-client
  * API.
  */
-public class JenkinsHandler {
+public final class JenkinsHandler {
+
+    /**
+     * Utility class.
+     */
+    private JenkinsHandler() {
+    }
 
     /**
      * Gets a Jenkins instance object from the jenkins-client API.
@@ -33,6 +39,9 @@ public class JenkinsHandler {
         if (jenkinsUri == null || username == null || password == null) {
             return null;
         }
+        // interestingly enough, passing a null URI causes the API to vomit 
+        // see https://github.com/jenkinsci/java-client-api/blob/master/jenkins-client/src/main/java/com/offbytwo/jenkins/client/JenkinsHttpClient.java#L83
+        // he should check to see if this is null.
         return new JenkinsServer(jenkinsUri, username, new String(password));
     }
 
@@ -60,21 +69,24 @@ public class JenkinsHandler {
      * @return a HashMap containing all of the projects and their jobs.
      */
     public static Map<String, Job> getJobs(JenkinsServer server) {
-        try {
-            return server.getJobs();
-        } catch (IOException ex) {
-            Logger.getLogger(JenkinsHandler.class.getName()).log(Level.SEVERE, "Failed to retrieve jobs from Jenkins server.");
-            return null;
+        if (server != null) {
+            try {
+                return server.getJobs();
+            } catch (IOException ex) {
+                Logger.getLogger(JenkinsHandler.class.getName()).log(Level.SEVERE, "Failed to retrieve jobs from Jenkins server.");
+            }
         }
+        return null;
     }
 
     /**
-     * Accepts indexes from the build list and returns a list of BuildWithDetails objects comprised of the 
-     * selected builds.
+     * Accepts indexes from the build list and returns a list of
+     * BuildWithDetails objects comprised of the selected builds.
+     *
      * @param selectedIndices - The indexes to get details from within the build list.
      * @param buildListContents - The contents of the build list.
-     * @return A list containing BuildWithDetails (build details objects) corresponding to the provided
-     * build list and indexes.
+     * @return A list containing BuildWithDetails (build details objects)
+     * corresponding to the provided build list and indexes.
      */
     public static List<BuildWithDetails> getBuildsWithDetails(int[] selectedIndices, List<Build> buildListContents) {
         List<BuildWithDetails> selectedBuilds = new ArrayList<>();

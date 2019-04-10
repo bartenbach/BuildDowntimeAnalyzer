@@ -1,6 +1,5 @@
 package mil.af.weather.ui;
 
-import mil.af.weather.ui.BuildDowntimeAnalyzer;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Job;
 import java.awt.Cursor;
@@ -19,6 +18,7 @@ public class CredentialsHelper extends javax.swing.JFrame {
      */
     public CredentialsHelper() {
         initComponents();
+        this.getRootPane().setDefaultButton(btnSubmit);
     }
 
     /**
@@ -147,21 +147,22 @@ public class CredentialsHelper extends javax.swing.JFrame {
         // instantiate jenkins server object using given credentials
         JenkinsServer jenkinsServer = JenkinsHandler.getJenkins(jenkinsUrl, username, password);
         // build a map of all jobs on the server
-        Map<String,Job> jobMap = JenkinsHandler.getJobs(jenkinsServer);
-        
+        Map<String, Job> jobMap = JenkinsHandler.getJobs(jenkinsServer);
+
         // If we can't get a map of jobs, there's no point going any further
         if (jobMap == null) {
             JOptionPane.showMessageDialog(this, "Failed to connect to Jenkins instance", "Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
+            this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            return;
         }
-        
+
         BuildDowntimeAnalyzer buildDowntimeAnalyzer = new BuildDowntimeAnalyzer(jobMap);
         // hide credentials window
         this.setVisible(false);
         // center build downtime analyzer window and set visible
         buildDowntimeAnalyzer.setLocationRelativeTo(null);
         buildDowntimeAnalyzer.setVisible(true);
-        
+
         this.getComponent(0).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_btnSubmitActionPerformed
 
@@ -170,43 +171,6 @@ public class CredentialsHelper extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_btnCancelActionPerformed
 
-    /**
-     * The Entry point of the application.
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CredentialsHelper.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CredentialsHelper.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CredentialsHelper.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CredentialsHelper.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            CredentialsHelper credentialsHelper = new CredentialsHelper();
-            credentialsHelper.setLocationRelativeTo(null);
-            credentialsHelper.setVisible(true);
-            credentialsHelper.getRootPane().setDefaultButton(btnSubmit);
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
