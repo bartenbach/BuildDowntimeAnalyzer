@@ -4,6 +4,7 @@ import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -169,4 +170,39 @@ public class BuildMetricsTest {
         assertEquals(2, metrics.getFailedBuilds());
         assertEquals(2, metrics.getSuccessfulBuilds());
     }
+    
+    /* not sure how to test this...
+    @Test
+    public void testAddLastBuild() {
+        List<BuildWithDetails> buildDetailsList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            BuildWithDetails buildDetails = Mockito.mock(BuildWithDetails.class);
+            Mockito.when(buildDetails.isBuilding()).thenReturn(false);
+            // 0 Failure 0L
+            // 1 Success 10000L
+            // 2 Failure 20000L
+            // 3 Success 30000L
+            // so we get a downtime of 10000 + 10000
+            // and an uptime of 10000L
+            if (i % 2 == 0) {
+                Mockito.when(buildDetails.getResult()).thenReturn(BuildResult.FAILURE);
+                Mockito.when(buildDetails.getTimestamp()).thenReturn(10000L * i);
+            } else {
+                Mockito.when(buildDetails.getResult()).thenReturn(BuildResult.SUCCESS);
+                Mockito.when(buildDetails.getTimestamp()).thenReturn(10000L * i);
+            }
+            buildDetailsList.add(buildDetails);
+        }
+        BuildWithDetails weirdBuild = Mockito.mock(BuildWithDetails.class);
+        Mockito.when(weirdBuild.isBuilding()).thenReturn(false);
+        // cancelled builds shouldn't affect the metrics
+        Mockito.when(weirdBuild.getResult()).thenReturn(BuildResult.CANCELLED);
+        Mockito.when(weirdBuild.getTimestamp()).thenReturn(new Date().getTime()); // next build in list
+
+        // This needs to be in reverse order like Jenkins build lists
+        Collections.reverse(buildDetailsList);
+        BuildMetrics metrics = new BuildMetrics().buildMetrics(buildDetailsList, false);
+        assertEquals(2, metrics.getFailedBuilds());
+        assertEquals(2, metrics.getSuccessfulBuilds());
+    }*/
 }
