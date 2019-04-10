@@ -1,3 +1,6 @@
 BuildFailureAnalyzer.iml
 target/*
 .idea/*
+lib/*
+nbactions.xml
+
